@@ -82,7 +82,18 @@ function handleItemSelected(itemData) {
   // have we got a link we need to load?
   if (node.Type === "Node.Link") {
     var nodeUrl = node.Uri;
-    var url = "https://ce.corethree.net/Corethree/ClientSupport/HandleScannedBarcode?ContextNode=&Value=" + encodeURI(nodeUrl);
+    if (nodeUrl.substring(0,7) == "part://") {
+        nodeUrl = nodeUrl.substring(7).replace('.', '/').replace('.', '/').replace('.', '/');
+    }
+    var url = "https://ce.corethree.net/" + nodeUrl;
+    if (url.indexOf("format=json") == -1) {
+      if (url.indexOf("?") == -1) {
+        url += "?format=json";
+      }
+      else {
+        url += "&format=json"; 
+      }
+    }
     console.log('Calling ' + url);
     ajax(
       {
@@ -103,8 +114,11 @@ function handleItemSelected(itemData) {
       }
     );
   }
-  
-  loadContent(node);
+  else
+  {
+    // nope - just load the Node content as normal
+    loadContent(node);
+  }
 }
 
 function reinit() {
